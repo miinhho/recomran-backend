@@ -1,13 +1,12 @@
-User Schema - JPA
-
+User Schema - JPA ✅
 - Id, username, password, image, saved_place, history_place
 - String, String, String, String, Place[], Place[]
 
-Place Schema - JPA
+Place Schema - JPA ✅
 - Id, place_name, category_name, phone, address_name, road_address_name, url
 - String, String, String, String, String, String, String
 
-JWT 보안 설정
+JWT 보안 설정 ✅
 
 REST Client 설정
 - 경도와 위도를 받아오는 작업 (프론트엔드)
