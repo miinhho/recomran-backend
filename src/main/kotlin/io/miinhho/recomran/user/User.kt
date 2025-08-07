@@ -9,9 +9,10 @@ data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    var username: String,
+    var email: String,
     var password: String,
-    var image: String,
+    var username: String? = null,
+    var image: String? = null,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     var savedPlaces: MutableList<SavedPlace> = mutableListOf(),
