@@ -6,6 +6,7 @@ import io.miinhho.recomran.user.User
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "place_history")
 data class PlaceHistory(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,

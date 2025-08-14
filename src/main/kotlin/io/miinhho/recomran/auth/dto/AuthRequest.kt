@@ -12,3 +12,7 @@ data class AuthRequest(
     )
     val password: String,
 )
+
+data class RefreshRequest(
+    val refreshToken: String
+)

@@ -6,8 +6,10 @@ import io.miinhho.recomran.saved.SavedPlace
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "user")
 data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     var id: Long? = null,
 
     var email: String,
