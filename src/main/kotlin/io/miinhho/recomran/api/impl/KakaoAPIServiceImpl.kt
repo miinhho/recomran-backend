@@ -11,9 +11,6 @@ import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
-// Kakao API 의 음식점 카테고리
-private const val CATEGORY_CODE = "FD6"
-
 class KakaoAPIServiceImpl(
     @Value($$"${kakao_api.key}") private val kakaoAPIKey: String,
     @Value($$"${kakao_api.url}") private val kakaoAPIUrl: String
@@ -41,7 +38,7 @@ class KakaoAPIServiceImpl(
      */
     private fun getApiUri(x: Double, y: Double, radius: Int, page: Int?, size: Int?): URI {
         val builder = UriComponentsBuilder.fromUriString(kakaoAPIUrl)
-            .queryParam("category_group_code", CATEGORY_CODE)
+            .queryParam("category_group_code", KakaoAPIService.CATEGORY_CODE)
             .queryParam("x", x)
             .queryParam("y", y)
             .queryParam("radius", radius)

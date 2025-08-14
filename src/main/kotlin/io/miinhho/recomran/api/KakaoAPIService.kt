@@ -1,8 +1,21 @@
 package io.miinhho.recomran.api
 
 import io.miinhho.recomran.api.dto.PlaceDocument
+import kotlin.random.Random
 
 interface KakaoAPIService {
+    companion object {
+        /**
+         * Kakao API 의 음식점 카테고리
+         */
+        const val CATEGORY_CODE: String = "FD6"
+
+        fun getRandomPlace(places: List<PlaceDocument>): PlaceDocument {
+            val randomIndex = Random.nextInt(places.size)
+            return places[randomIndex]
+        }
+    }
+
     /**
      * Kakao API 에서 `radius` 이내의 음식점을 조회합니다.
      *

@@ -2,7 +2,11 @@ package io.miinhho.recomran.auth
 
 import io.miinhho.recomran.auth.dto.AuthRequest
 import io.miinhho.recomran.auth.dto.RefreshRequest
+import io.miinhho.recomran.common.response.APIResponse
+import io.miinhho.recomran.common.response.APIResponseEntity
 import jakarta.validation.Valid
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,20 +20,33 @@ class AuthController(
     @PostMapping("/register")
     fun register(
         @Valid @RequestBody body: AuthRequest
-    ) {
-        authService.register(body.email, body.password)
+    ): APIResponseEntity {
+        val user = authService.register(body.email, body.password)
+        return APIResponse.success(user).ok()
     }
 
     @PostMapping("/login")
     fun login(
         @Valid @RequestBody body: AuthRequest
-    ): AuthService.TokenPair {
-        return authService.login(body.email, body.password)
+    ): APIResponseEntity {
+        val tokenPair = authService.login(body.email, body.password)
+        val body = APIResponse.success(tokenPair.accessToken)
+        val refreshCookie = tokenPair.toRefreshCookie()
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(body)
     }
 
     fun refresh(
         @RequestBody body: RefreshRequest
-    ): AuthService.TokenPair {
-        return authService.refresh(body.refreshToken)
+    ): APIResponseEntity {
+        val tokenPair = authService.refresh(body.refreshToken)
+        val body = APIResponse.success(tokenPair.accessToken)
+        val refreshCookie = tokenPair.toRefreshCookie()
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(body)
     }
 }

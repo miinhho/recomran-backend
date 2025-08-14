@@ -1,11 +1,42 @@
 package io.miinhho.recomran.common.response
 
-data class APIResponse(
-    val success: Boolean?,
-    val statusCode: APIStatusCode,
-    val message: String?,
-)
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 
-enum class APIStatusCode(val code: String) {
-    API_SERVICE_DOWN("AD10")
+typealias APIResponseEntity = ResponseEntity<APIResponse>
+
+data class APIResponse(
+    val statusCode: APIStatusCode?,
+    val message: String?,
+    val data: Any?
+) {
+    companion object {
+        fun success(data: Any?): APIResponse =
+            APIResponse(
+                statusCode = null,
+                message = null,
+                data,
+            )
+
+        fun fail(statusCode: APIStatusCode?, message: String?): APIResponse =
+            APIResponse(
+                statusCode,
+                message,
+                data = null,
+            )
+
+        fun fail(statusCode: APIStatusCode?): APIResponse =
+            APIResponse(
+                statusCode,
+                message = null,
+                data = null,
+            )
+    }
+
+    private fun toResponseEntity(httpStatus: HttpStatus): APIResponseEntity =
+        ResponseEntity.status(httpStatus).body(this)
+
+    fun ok(): APIResponseEntity = toResponseEntity(HttpStatus.OK)
+
+    fun status(httpStatus: HttpStatus): APIResponseEntity = toResponseEntity(httpStatus)
 }

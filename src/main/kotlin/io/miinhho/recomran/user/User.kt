@@ -1,5 +1,6 @@
 package io.miinhho.recomran.user
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.miinhho.recomran.history.PlaceHistory
 import io.miinhho.recomran.saved.SavedPlace
 import jakarta.persistence.*
@@ -10,7 +11,10 @@ data class User(
     var id: Long? = null,
 
     var email: String,
+
+    @JsonIgnore
     var password: String,
+
     var username: String? = null,
     var image: String? = null,
 

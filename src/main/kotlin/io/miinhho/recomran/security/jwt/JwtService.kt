@@ -3,10 +3,9 @@ package io.miinhho.recomran.security.jwt
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import io.miinhho.recomran.auth.exception.InvalidTokenException
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.util.Base64
 import java.util.Date
 
@@ -15,8 +14,12 @@ class JwtService(
     @Value($$"${jwt.secret}") private val jwtSecret: String
 ) {
     private val secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtSecret))
+
+    companion object {
+        const val REFRESH_TOKEN_VALID_MS: Long = 30L * 24 * 60 * 60 * 100
+    }
+
     private val accessTokenValidityMs = 15L * 60 * 1000
-    val refreshTokenValidifyMs = 30L * 24 * 60 * 60 * 100
 
     private fun generateToken(
         userId: String,
@@ -39,7 +42,7 @@ class JwtService(
     }
 
     fun generateRefreshToken(userId: String): String {
-        return generateToken(userId, "refresh", refreshTokenValidifyMs)
+        return generateToken(userId, "refresh", REFRESH_TOKEN_VALID_MS)
     }
 
     fun validateAccessToken(token: String): Boolean {
@@ -55,10 +58,7 @@ class JwtService(
     }
 
     fun getUserIdFromToken(token: String): Long {
-        val claims = parseAllClaims(token) ?: throw ResponseStatusException(
-        HttpStatus.UNAUTHORIZED,
-        "Invalid token."
-        )
+        val claims = parseAllClaims(token) ?: throw InvalidTokenException()
         return claims.subject.toLong()
     }
 
@@ -72,10 +72,8 @@ class JwtService(
                 .build()
                 .parseSignedClaims(rawToken)
                 .payload
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
-
-
 }

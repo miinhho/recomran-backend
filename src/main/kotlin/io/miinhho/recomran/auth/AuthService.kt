@@ -1,16 +1,19 @@
 package io.miinhho.recomran.auth
 
+import io.miinhho.recomran.auth.exception.ConflictEmailException
+import io.miinhho.recomran.auth.exception.InvalidEmailException
+import io.miinhho.recomran.auth.exception.InvalidPasswordException
+import io.miinhho.recomran.auth.exception.InvalidTokenException
 import io.miinhho.recomran.auth.token.RefreshToken
 import io.miinhho.recomran.auth.token.RefreshTokenRepository
+import io.miinhho.recomran.auth.token.TokenUtil
 import io.miinhho.recomran.security.jwt.HashEncoder
 import io.miinhho.recomran.security.jwt.JwtService
 import io.miinhho.recomran.user.User
 import io.miinhho.recomran.user.UserRepository
-import org.springframework.http.HttpStatus
-import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.Base64
@@ -22,15 +25,9 @@ class AuthService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val hashEncoder: HashEncoder,
 ) {
-    data class TokenPair(
-        val accessToken: String,
-        val refreshToken: String,
-    )
 
     fun register(email: String, password: String): User {
-        userRepository.findByEmail(email.trim()) ?: throw ResponseStatusException(
-            HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."
-        )
+        userRepository.findByEmail(email.trim()) ?: throw ConflictEmailException()
         return userRepository.save(
             User(
                 email = email,
@@ -41,9 +38,9 @@ class AuthService(
 
     fun login(email: String, password: String): TokenPair {
         val user = userRepository.findByEmail(email)
-            ?: throw BadCredentialsException("유효하지 않은 이메일입니다.")
+            ?: throw InvalidEmailException()
         if (!hashEncoder.matches(password, user.password)) {
-            throw BadCredentialsException("유효하지 않은 비밀번호입니다.")
+            throw InvalidPasswordException()
         }
 
         val userIdToHex = user.id!!.toHexString()
@@ -61,19 +58,16 @@ class AuthService(
     @Transactional
     fun refresh(refreshToken: String): TokenPair {
         if (!jwtService.validateRefreshToken(refreshToken)) {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.")
+            throw InvalidTokenException()
         }
         val userId = jwtService.getUserIdFromToken(refreshToken)
         val user = userRepository.findById(userId).orElseThrow {
-            ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다")
+            throw InvalidTokenException()
         }
 
         val hashed = hashToken(refreshToken)
         refreshTokenRepository.findByUserIdAndHashedToken(user.id!!, hashed)
-            ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "토큰을 찾을 수 없습니다."
-            )
+            ?: throw InvalidTokenException()
 
         refreshTokenRepository.deleteByUserIdAndHashedToken(user.id!!, hashed)
 
@@ -90,7 +84,7 @@ class AuthService(
 
     private fun storeRefreshToken(userId: Long, rawRefreshToken: String) {
         val hashedToken = hashToken(rawRefreshToken)
-        val expiryMs = jwtService.refreshTokenValidifyMs
+        val expiryMs = JwtService.REFRESH_TOKEN_VALID_MS
         val expiresAt = LocalDateTime.now().plusSeconds(expiryMs / 1000)
 
         refreshTokenRepository.save(
@@ -107,4 +101,11 @@ class AuthService(
         val hashBytes = digest.digest(token.encodeToByteArray())
         return Base64.getEncoder().encodeToString(hashBytes)
     }
+}
+
+data class TokenPair(
+    val accessToken: String,
+    val refreshToken: String,
+) {
+    fun toRefreshCookie(): ResponseCookie = TokenUtil.getRefreshCookie(this.refreshToken)
 }
