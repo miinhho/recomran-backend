@@ -6,29 +6,49 @@ import org.springframework.http.ResponseEntity
 typealias APIResponseEntity = ResponseEntity<APIResponse>
 
 data class APIResponse(
+    val success: Boolean,
     val statusCode: APIStatusCode?,
     val message: String?,
     val data: Any?
 ) {
     companion object {
+        fun success(): APIResponse =
+            APIResponse(
+                success = true,
+                statusCode = null,
+                message = null,
+                data = null,
+            )
+
         fun success(data: Any?): APIResponse =
             APIResponse(
+                success = true,
                 statusCode = null,
                 message = null,
                 data,
             )
 
-        fun fail(statusCode: APIStatusCode?, message: String?): APIResponse =
+        fun fail(statusCode: APIStatusCode?): APIResponse =
             APIResponse(
-                statusCode,
-                message,
+                success = false,
+                statusCode = statusCode,
+                message = null,
                 data = null,
             )
 
-        fun fail(statusCode: APIStatusCode?): APIResponse =
+        fun fail(message: String?): APIResponse =
             APIResponse(
-                statusCode,
-                message = null,
+                success = false,
+                statusCode = null,
+                message = message,
+                data = null,
+            )
+
+        fun fail(statusCode: APIStatusCode?, message: String?): APIResponse =
+            APIResponse(
+                success = false,
+                statusCode = statusCode,
+                message = message,
                 data = null,
             )
     }
