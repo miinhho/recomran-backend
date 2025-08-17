@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/place")
-class PlaceController(
-    val kakaoAPIService: KakaoAPIService
-) {
+class PlaceController(private val kakaoAPIService: KakaoAPIService) {
 
     @GetMapping("/search")
     fun getPlaceFromKakaoAPI(
@@ -24,6 +22,7 @@ class PlaceController(
     ): APIResponseEntity {
         val places = kakaoAPIService.getPlaces(x, y, radius, page, size)
         val randomPlace = KakaoAPIService.getRandomPlace(places)
-        return APIResponse.success(randomPlace).ok()
+        return APIResponse
+            .success(data = randomPlace)
     }
 }

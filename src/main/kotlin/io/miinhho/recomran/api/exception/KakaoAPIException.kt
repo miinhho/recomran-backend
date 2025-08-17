@@ -1,3 +1,9 @@
 package io.miinhho.recomran.api.exception
 
-class KakaoAPIException() : RuntimeException()
+import io.miinhho.recomran.common.exception.APIStatusException
+import io.miinhho.recomran.common.response.APIStatusCode
+
+class KakaoAPIException() : APIStatusException(
+    status = APIStatusCode.API_SERVICE_DOWN,
+    message = APIStatusCode.API_SERVICE_DOWN.defaultMessage
+)

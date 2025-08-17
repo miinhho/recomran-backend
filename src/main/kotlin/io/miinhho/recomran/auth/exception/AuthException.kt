@@ -1,17 +1,29 @@
 package io.miinhho.recomran.auth.exception
 
-class InvalidTokenException(override val message: String?) : RuntimeException(message) {
-    constructor(): this(null)
-}
+import io.miinhho.recomran.common.exception.APIStatusException
+import io.miinhho.recomran.common.response.APIStatusCode
 
-class InvalidEmailException(override val message: String?) : RuntimeException(message) {
-    constructor(): this(null)
-}
+open class AuthException(
+    override val message: String? = null,
+    override val status: APIStatusCode
+) : APIStatusException(message, status)
 
-class InvalidPasswordException(override val message: String?): RuntimeException(message) {
-    constructor(): this(null)
-}
+class InvalidTokenException(
+    message: String? = null,
+    status: APIStatusCode = APIStatusCode.INVALID_TOKEN
+) : AuthException(message, status)
 
-class ConflictEmailException(override val message: String?): RuntimeException(message) {
-    constructor(): this(null)
-}
+class InvalidEmailException(
+    message: String? = null,
+    status: APIStatusCode = APIStatusCode.INVALID_EMAIL
+) : AuthException(message, status)
+
+class InvalidPasswordException(
+    message: String? = null,
+    status: APIStatusCode = APIStatusCode.INVALID_PASSWORD
+) : AuthException(message, status)
+
+class ConflictEmailException(
+    message: String? = null,
+    status: APIStatusCode = APIStatusCode.EMAIL_ALREADY_USE
+) : AuthException(message, status)

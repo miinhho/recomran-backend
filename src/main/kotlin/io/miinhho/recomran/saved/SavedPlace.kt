@@ -7,7 +7,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "saved_place")
-data class SavedPlace(
+class SavedPlace(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "saved_place_id")
     var id: Long? = null,

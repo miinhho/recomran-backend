@@ -22,7 +22,9 @@ class AuthController(
         @Valid @RequestBody body: AuthRequest
     ): APIResponseEntity {
         val user = authService.register(body.email, body.password)
-        return APIResponse.success(user).ok()
+        return APIResponse.success(
+            data = user
+        )
     }
 
     @PostMapping("/login")
@@ -30,8 +32,10 @@ class AuthController(
         @Valid @RequestBody body: AuthRequest
     ): APIResponseEntity {
         val tokenPair = authService.login(body.email, body.password)
-        val body = APIResponse.success(tokenPair.accessToken)
         val refreshCookie = tokenPair.toRefreshCookie()
+        val body = APIResponse.body(
+            data = tokenPair.accessToken
+        )
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
@@ -42,8 +46,10 @@ class AuthController(
         @RequestBody body: RefreshRequest
     ): APIResponseEntity {
         val tokenPair = authService.refresh(body.refreshToken)
-        val body = APIResponse.success(tokenPair.accessToken)
         val refreshCookie = tokenPair.toRefreshCookie()
+        val body = APIResponse.body(
+            data = tokenPair.accessToken
+        )
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
