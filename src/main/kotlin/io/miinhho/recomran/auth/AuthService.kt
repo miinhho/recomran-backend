@@ -4,13 +4,14 @@ import io.miinhho.recomran.auth.exception.ConflictEmailException
 import io.miinhho.recomran.auth.exception.InvalidEmailException
 import io.miinhho.recomran.auth.exception.InvalidPasswordException
 import io.miinhho.recomran.auth.exception.InvalidTokenException
-import io.miinhho.recomran.auth.token.RefreshToken
-import io.miinhho.recomran.auth.token.RefreshTokenRepository
+import io.miinhho.recomran.auth.token.model.RefreshToken
+import io.miinhho.recomran.auth.token.repository.RefreshTokenRepository
 import io.miinhho.recomran.auth.token.TokenUtil
 import io.miinhho.recomran.security.jwt.HashEncoder
 import io.miinhho.recomran.security.jwt.JwtService
-import io.miinhho.recomran.user.User
-import io.miinhho.recomran.user.UserRepository
+import io.miinhho.recomran.user.model.Email
+import io.miinhho.recomran.user.model.User
+import io.miinhho.recomran.user.repository.UserRepository
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,16 +28,18 @@ class AuthService(
 ) {
 
     fun register(email: String, password: String): User {
-        userRepository.findByEmail(email.trim()) ?: throw ConflictEmailException()
+        val email = Email(email)
+        userRepository.findByEmail(email) ?: throw ConflictEmailException()
         return userRepository.save(
             User(
                 email = email,
-                password = hashEncoder.encode(password),
+                hashedPassword = hashEncoder.encode(password),
             )
         )
     }
 
     fun login(email: String, password: String): TokenPair {
+        val email = Email(email)
         val user = userRepository.findByEmail(email)
             ?: throw InvalidEmailException()
         if (!hashEncoder.matches(password, user.password)) {
@@ -47,7 +50,7 @@ class AuthService(
         val newAccessToken = jwtService.generateAccessToken(userIdToHex)
         val newRefreshToken = jwtService.generateRefreshToken(userIdToHex)
 
-        storeRefreshToken(user.id!!, newRefreshToken)
+        storeRefreshToken(user.id, newRefreshToken)
 
         return TokenPair(
             accessToken = newAccessToken,
@@ -61,18 +64,18 @@ class AuthService(
             throw InvalidTokenException()
         }
         val userId = jwtService.getUserIdFromToken(refreshToken)
-        val user = userRepository.findById(userId).orElseThrow { InvalidTokenException() }
+        val user = userRepository.findById(userId) ?: throw InvalidTokenException()
 
         val hashed = hashToken(refreshToken)
-        refreshTokenRepository.findByUserIdAndHashedToken(user.id!!, hashed)
+        refreshTokenRepository.find(user.id!!, hashed)
             ?: throw InvalidTokenException()
 
-        refreshTokenRepository.deleteByUserIdAndHashedToken(user.id!!, hashed)
+        refreshTokenRepository.delete(user.id, hashed)
 
         val newAccessToken = jwtService.generateAccessToken(userId.toHexString())
         val newRefreshToken = jwtService.generateRefreshToken(userId.toHexString())
 
-        storeRefreshToken(user.id!!, newRefreshToken)
+        storeRefreshToken(user.id, newRefreshToken)
 
         return TokenPair(
             accessToken = newAccessToken,
@@ -85,13 +88,12 @@ class AuthService(
         val expiresAt = LocalDateTime.now().plusSeconds(
             JwtService.REFRESH_TOKEN_VALID_MS / 1000)
 
-        refreshTokenRepository.save(
-            RefreshToken(
-                userId = userId,
-                expiresAt = expiresAt,
-                hashedToken = hashedToken
-            )
+        val refreshToken = RefreshToken(
+            userId = userId,
+            expiresAt = expiresAt,
+            hashedToken = hashedToken
         )
+        refreshTokenRepository.save(refreshToken)
     }
 
     private fun hashToken(token: String): String {
@@ -105,5 +107,6 @@ data class TokenPair(
     val accessToken: String,
     val refreshToken: String,
 ) {
-    fun toRefreshCookie(): ResponseCookie = TokenUtil.getRefreshCookie(this.refreshToken)
+    fun toRefreshCookie(): ResponseCookie =
+        TokenUtil.getRefreshCookie(this.refreshToken)
 }

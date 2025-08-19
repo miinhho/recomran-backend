@@ -1,6 +1,6 @@
 package io.miinhho.recomran.security.jwt
 
-import io.miinhho.recomran.user.UserRepository
+import io.miinhho.recomran.user.repository.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -23,7 +23,8 @@ class JwtAuthFilter(
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             if (jwtService.validateAccessToken(authHeader)) {
                 val userId = jwtService.getUserIdFromToken(authHeader)
-                userRepository.findById(userId).ifPresent { user ->
+                val user = userRepository.findById(userId)
+                if (user != null) {
                     val auth = UsernamePasswordAuthenticationToken(
                         user, null, user.authorities)
                     SecurityContextHolder.getContext().authentication = auth

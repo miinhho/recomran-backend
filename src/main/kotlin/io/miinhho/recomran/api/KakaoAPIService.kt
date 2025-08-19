@@ -3,6 +3,8 @@ package io.miinhho.recomran.api
 import io.miinhho.recomran.api.dto.KakaoPlaceResponse
 import io.miinhho.recomran.api.dto.PlaceDocument
 import io.miinhho.recomran.api.exception.KakaoAPIException
+import io.miinhho.recomran.place.model.Place
+import io.miinhho.recomran.place.model.toPlace
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -23,7 +25,7 @@ class KakaoAPIService(
          */
         const val CATEGORY_CODE: String = "FD6"
 
-        fun getRandomPlace(places: List<PlaceDocument>): PlaceDocument {
+        fun getRandomPlace(places: List<Place>): Place {
             val randomIndex = Random.nextInt(places.size)
             return places[randomIndex]
         }
@@ -40,7 +42,7 @@ class KakaoAPIService(
      * @return 음식점 목록
      * @throws io.miinhho.recomran.api.exception.KakaoAPIException - Kakao API 의 응답이 유효하지 않았을 때
      */
-    fun getPlaces(x: Double, y: Double, radius: Int, page: Int?, size: Int?): List<PlaceDocument> {
+    fun getPlaces(x: Double, y: Double, radius: Int, page: Int?, size: Int?): List<Place> {
         val apiUri = getApiUri(x, y, radius, page, size)
 
         val restClient = RestClient.create()
@@ -49,9 +51,9 @@ class KakaoAPIService(
             .header("Authorization", "KakaoAK $kakaoAPIKey")
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
-            .body<KakaoPlaceResponse>()
+            .body<KakaoPlaceResponse>() ?: throw KakaoAPIException()
 
-        return response?.documents ?: throw KakaoAPIException()
+        return response.documents.map { it.toPlace() }
     }
 
     /**

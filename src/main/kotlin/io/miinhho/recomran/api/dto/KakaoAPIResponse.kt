@@ -10,18 +10,18 @@ data class KakaoPlaceResponse(
 data class PlaceDocument(
     val id: String,
     @JsonProperty("place_name")
-    val placeName: String,
+    val name: String,
     @JsonProperty("category_name")
-    val categoryName: String,
+    val category: String,
     val phone: String,
     @JsonProperty("address_name")
-    val addressName: String,
+    val address: String,
     @JsonProperty("road_address_name")
-    val roadAddressName: String,
+    val roadAddress: String,
     val x: String,
     val y: String,
     @JsonProperty("place_url")
-    val placeUrl: String,
+    val url: String,
     val distance: String,
 )
 

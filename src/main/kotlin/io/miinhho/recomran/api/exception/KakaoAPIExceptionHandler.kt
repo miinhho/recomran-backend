@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class KakaoAPIExceptionHandler {
     @ExceptionHandler(KakaoAPIException::class)
-    fun kakaoAPIException(ex: KakaoAPIException): APIResponseEntity =
-        ex.toResponseEntity()
+    fun kakaoAPIException(ex: KakaoAPIException): APIResponseEntity {
+        return ex.toResponseEntity()
+    }
 }

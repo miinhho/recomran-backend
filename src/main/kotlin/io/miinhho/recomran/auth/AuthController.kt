@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/auth")
-class AuthController(
-    private val authService: AuthService
-) {
+class AuthController(private val authService: AuthService) {
     @PostMapping("/register")
     fun register(
         @Valid @RequestBody body: AuthRequest

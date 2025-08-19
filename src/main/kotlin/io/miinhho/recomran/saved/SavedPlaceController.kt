@@ -5,7 +5,10 @@ import io.miinhho.recomran.common.response.APIResponseEntity
 import io.miinhho.recomran.saved.dto.AddSavedPlaceRequest
 import io.miinhho.recomran.saved.exception.SavedPlaceNotFoundException
 import io.miinhho.recomran.saved.exception.SavedPlaceNotOwnerException
-import io.miinhho.recomran.user.User
+import io.miinhho.recomran.saved.model.SavedPlace
+import io.miinhho.recomran.saved.model.SavedPlaceName
+import io.miinhho.recomran.saved.repository.SavedPlaceRepository
+import io.miinhho.recomran.user.model.User
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -31,7 +34,7 @@ class SavedPlaceController(
         @AuthenticationPrincipal user: User,
         @RequestBody body: AddSavedPlaceRequest
     ): APIResponseEntity {
-        val savedPlace = SavedPlace(name = body.name, user = user)
+        val savedPlace = SavedPlace(name = SavedPlaceName(body.name), userId = user.id!!)
         savedPlaceRepository.save(savedPlace)
         return APIResponse.success()
     }
@@ -41,7 +44,7 @@ class SavedPlaceController(
         @AuthenticationPrincipal user: User,
         @PageableDefault(size = SAVED_PLACE_PAGE_SIZE, page = 0) pageable: Pageable
     ): APIResponseEntity {
-        val places = savedPlaceRepository.findSavedPlacesByUserId(
+        val places = savedPlaceRepository.findByUserId(
             userId = user.id!!, pageable = pageable)
         return APIResponse.success(data = places)
     }
@@ -53,8 +56,9 @@ class SavedPlaceController(
         @PageableDefault(size = PLACE_PAGE_SIZE, page = 0) pageable: Pageable
     ): APIResponseEntity {
         // 해당 사용자가 saved place 에 접근할 수 있는지 확인
-        val savedPlace = savedPlaceRepository.findById(id).orElseThrow { SavedPlaceNotFoundException() }
-        if (savedPlace.user.id != user.id) {
+        val savedPlace = savedPlaceRepository.findById(id)
+            ?: throw SavedPlaceNotFoundException()
+        if (savedPlace.userId != user.id) {
             throw SavedPlaceNotOwnerException()
         }
 
