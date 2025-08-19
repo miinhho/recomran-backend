@@ -61,9 +61,7 @@ class AuthService(
             throw InvalidTokenException()
         }
         val userId = jwtService.getUserIdFromToken(refreshToken)
-        val user = userRepository.findById(userId).orElseThrow {
-            throw InvalidTokenException()
-        }
+        val user = userRepository.findById(userId).orElseThrow { InvalidTokenException() }
 
         val hashed = hashToken(refreshToken)
         refreshTokenRepository.findByUserIdAndHashedToken(user.id!!, hashed)

@@ -4,26 +4,17 @@ import io.miinhho.recomran.common.exception.APIStatusException
 import io.miinhho.recomran.common.response.APIStatusCode
 
 open class AuthException(
-    override val message: String? = null,
     override val status: APIStatusCode
-) : APIStatusException(message, status)
+) : APIStatusException(status = status)
 
-class InvalidTokenException(
-    message: String? = null,
-    status: APIStatusCode = APIStatusCode.INVALID_TOKEN
-) : AuthException(message, status)
+class InvalidTokenException()
+    : AuthException(status = APIStatusCode.INVALID_TOKEN)
 
-class InvalidEmailException(
-    message: String? = null,
-    status: APIStatusCode = APIStatusCode.INVALID_EMAIL
-) : AuthException(message, status)
+class InvalidEmailException()
+    : AuthException(status = APIStatusCode.INVALID_EMAIL)
 
-class InvalidPasswordException(
-    message: String? = null,
-    status: APIStatusCode = APIStatusCode.INVALID_PASSWORD
-) : AuthException(message, status)
+class InvalidPasswordException()
+    : AuthException(status = APIStatusCode.INVALID_PASSWORD)
 
-class ConflictEmailException(
-    message: String? = null,
-    status: APIStatusCode = APIStatusCode.EMAIL_ALREADY_USE
-) : AuthException(message, status)
+class ConflictEmailException()
+    : AuthException(status = APIStatusCode.EMAIL_ALREADY_USE)

@@ -3,6 +3,8 @@ package io.miinhho.recomran.place
 import io.miinhho.recomran.api.KakaoAPIService
 import io.miinhho.recomran.common.response.APIResponse
 import io.miinhho.recomran.common.response.APIResponseEntity
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -17,12 +19,10 @@ class PlaceController(private val kakaoAPIService: KakaoAPIService) {
         @RequestParam("x") x: Double,
         @RequestParam("y") y: Double,
         @RequestParam("radius") radius: Int,
-        @RequestParam("page", required = false) page: Int?,
-        @RequestParam("size", required = false) size: Int?
+        @PageableDefault pageable: Pageable,
     ): APIResponseEntity {
-        val places = kakaoAPIService.getPlaces(x, y, radius, page, size)
+        val places = kakaoAPIService.getPlaces(x, y, radius, pageable.pageNumber, pageable.pageSize)
         val randomPlace = KakaoAPIService.getRandomPlace(places)
-        return APIResponse
-            .success(data = randomPlace)
+        return APIResponse.success(data = randomPlace)
     }
 }

@@ -1,5 +1,6 @@
 package io.miinhho.recomran.security.jwt
 
+import io.miinhho.recomran.user.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -10,7 +11,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthFilter(
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val userRepository: UserRepository
 ): OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -21,8 +23,11 @@ class JwtAuthFilter(
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             if (jwtService.validateAccessToken(authHeader)) {
                 val userId = jwtService.getUserIdFromToken(authHeader)
-                val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
-                SecurityContextHolder.getContext().authentication = auth
+                userRepository.findById(userId).ifPresent { user ->
+                    val auth = UsernamePasswordAuthenticationToken(
+                        user, null, user.authorities)
+                    SecurityContextHolder.getContext().authentication = auth
+                }
             }
         }
         filterChain.doFilter(request, response)

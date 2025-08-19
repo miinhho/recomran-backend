@@ -17,5 +17,10 @@ enum class APIStatusCode(
     INVALID_PASSWORD("AU03", HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다"),
     EMAIL_ALREADY_USE("AU04", HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다"),
 
+    USER_NOT_FOUND("UR01", HttpStatus.NOT_FOUND),
+
+    SAVED_PLACE_NOT_FOUND("SP01", HttpStatus.NOT_FOUND, "저장된 장소를 찾을 수 없습니다"),
+    SAVED_PLACE_NOT_OWNER("SP02", HttpStatus.BAD_REQUEST, "저장된 장소를 찾을 수 없습니다"),
+
     INVALID_REQUEST("VL01", HttpStatus.BAD_REQUEST, "요청 데이터가 올바르지 않습니다");
 }
