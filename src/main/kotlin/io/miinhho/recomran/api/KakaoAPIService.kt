@@ -64,7 +64,7 @@ class KakaoAPIService(
      */
     private fun getApiUri(x: Double, y: Double, radius: Int, page: Int?, size: Int?): URI {
         val builder = UriComponentsBuilder.fromUriString(kakaoAPIUrl)
-            .queryParam("category_group_code", KakaoAPIService.CATEGORY_CODE)
+            .queryParam("category_group_code", CATEGORY_CODE)
             .queryParam("x", x)
             .queryParam("y", y)
             .queryParam("radius", radius)
