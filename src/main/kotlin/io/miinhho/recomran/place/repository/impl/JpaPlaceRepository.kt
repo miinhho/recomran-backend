@@ -2,7 +2,6 @@ package io.miinhho.recomran.place.repository.impl
 
 import io.miinhho.recomran.place.repository.PlaceRepository
 import io.miinhho.recomran.place.model.Place
-import io.miinhho.recomran.place.repository.impl.PlaceEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

@@ -34,7 +34,7 @@ class PlaceHistoryEntity(
     fun toDomain(): PlaceHistory {
         return PlaceHistory(
             id = this.id,
-            user = this.user.toDomain(),
+            userId = this.user.id!!,
             place = this.place.toDomain(),
             createdAt = this.createdAt
         )

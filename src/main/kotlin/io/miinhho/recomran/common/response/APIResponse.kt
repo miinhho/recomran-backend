@@ -34,10 +34,10 @@ data class APIResponse(
             ).toResponseEntity()
 
         /**
-         * ResponseEntity 의 body 로 사용될 APIResponse 를 반환합니다.
+         * `ResponseEntity` 의 `body` 로 사용될 `APIResponse` 를 반환합니다.
          *
-         * @param success - (기본값: true)
-         * @param statusCode - (기본값: APIStatusCode.SUCCESS)
+         * @param success - (기본값: `true`)
+         * @param statusCode - (기본값: `APIStatusCode.SUCCESS`)
          */
         fun body(
             success: Boolean = true,

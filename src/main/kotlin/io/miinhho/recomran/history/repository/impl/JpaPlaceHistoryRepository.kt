@@ -28,15 +28,13 @@ class JpaPlaceHistoryRepository(
     }
 
     override fun save(entity: PlaceHistory): PlaceHistory {
-        val userId = entity.user.id
-            ?: throw NullPointerException("PlaceHistory 의 user id 가 유효하지 않습니다: ${entity.id}")
+        val userId = entity.userId
         val userEntity = userEntityRepository.findById(userId)
             .orElseThrow { UserNotFoundException(userId) }
 
         val newEntity = PlaceHistoryEntity.fromDomain(entity, userEntity)
         val savedEntity = placeHistoryEntityRepository.save(newEntity)
         return savedEntity.toDomain()
-
     }
 
     override fun delete(id: Long) {

@@ -1,7 +1,6 @@
 package io.miinhho.recomran.api
 
 import io.miinhho.recomran.api.dto.KakaoPlaceResponse
-import io.miinhho.recomran.api.dto.PlaceDocument
 import io.miinhho.recomran.api.exception.KakaoAPIException
 import io.miinhho.recomran.place.model.Place
 import io.miinhho.recomran.place.model.toPlace
