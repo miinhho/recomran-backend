@@ -2,6 +2,7 @@ package io.miinhho.recomran.saved.repository.impl
 
 import io.miinhho.recomran.place.model.Place
 import io.miinhho.recomran.place.repository.impl.PlaceEntity
+import io.miinhho.recomran.saved.exception.SavedPlaceNotFoundException
 import io.miinhho.recomran.saved.repository.SavedPlaceRepository
 import io.miinhho.recomran.saved.model.SavedPlace
 import io.miinhho.recomran.user.repository.impl.UserEntityRepository
@@ -16,9 +17,9 @@ class JpaSavedPlaceRepository(
     private val savedPlaceEntityRepository: SavedPlaceEntityRepository,
     private val userEntityRepository: UserEntityRepository
 ) : SavedPlaceRepository {
-    override fun findById(id: Long): SavedPlace? {
+    override fun findById(id: Long): SavedPlace {
         return savedPlaceEntityRepository.findById(id)
-            .orElse(null)?.toDomain()
+            .orElseThrow { SavedPlaceNotFoundException() }.toDomain()
     }
 
     override fun findByUserId(userId: Long, pageable: Pageable): List<SavedPlace> {

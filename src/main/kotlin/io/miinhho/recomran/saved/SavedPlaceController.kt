@@ -3,7 +3,6 @@ package io.miinhho.recomran.saved
 import io.miinhho.recomran.common.response.APIResponse
 import io.miinhho.recomran.common.response.APIResponseEntity
 import io.miinhho.recomran.saved.dto.AddSavedPlaceRequest
-import io.miinhho.recomran.saved.exception.SavedPlaceNotFoundException
 import io.miinhho.recomran.saved.exception.SavedPlaceNotOwnerException
 import io.miinhho.recomran.saved.model.SavedPlace
 import io.miinhho.recomran.saved.model.SavedPlaceName
@@ -55,9 +54,8 @@ class SavedPlaceController(
         @PathVariable("id") id: Long,
         @PageableDefault(size = PLACE_PAGE_SIZE, page = 0) pageable: Pageable
     ): APIResponseEntity {
-        // 해당 사용자가 saved place 에 접근할 수 있는지 확인
         val savedPlace = savedPlaceRepository.findById(id)
-            ?: throw SavedPlaceNotFoundException()
+        // 해당 사용자가 saved place 에 접근할 수 있는지 확인
         if (savedPlace.userId != user.id) {
             throw SavedPlaceNotOwnerException()
         }

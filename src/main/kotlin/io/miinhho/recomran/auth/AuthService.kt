@@ -29,7 +29,10 @@ class AuthService(
 
     fun register(email: String, password: String): User {
         val email = Email(email)
-        userRepository.findByEmail(email) ?: throw ConflictEmailException()
+        userRepository.findByEmail(email).let {
+            if (it != null) throw ConflictEmailException()
+        }
+
         return userRepository.save(
             User(
                 email = email,

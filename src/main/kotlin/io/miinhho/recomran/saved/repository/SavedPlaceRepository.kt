@@ -6,7 +6,7 @@ import io.miinhho.recomran.saved.model.SavedPlace
 import org.springframework.data.domain.Pageable
 
 interface SavedPlaceRepository : CommonRepository<SavedPlace> {
-    fun findById(id: Long): SavedPlace?
+    fun findById(id: Long): SavedPlace
     fun findPlacesBySavedPlaceId(id: Long, pageable: Pageable): List<Place>
     fun findPlacesByUserId(userId: Long, pageable: Pageable): List<Place>
     fun findByUserId(userId: Long, pageable: Pageable): List<SavedPlace>
