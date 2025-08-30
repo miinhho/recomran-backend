@@ -6,6 +6,7 @@ import io.miinhho.recomran.place.model.Place
 import io.miinhho.recomran.place.repository.impl.PlaceEntity
 import io.miinhho.recomran.user.exception.UserNotFoundException
 import io.miinhho.recomran.user.repository.impl.UserEntityRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -27,6 +28,7 @@ class JpaPlaceHistoryRepository(
             .map { it.toDomain() }.toList()
     }
 
+    @Transactional
     override fun save(entity: PlaceHistory): PlaceHistory {
         val userId = entity.userId
         val userEntity = userEntityRepository.findById(userId)
@@ -37,6 +39,7 @@ class JpaPlaceHistoryRepository(
         return savedEntity.toDomain()
     }
 
+    @Transactional
     override fun delete(id: Long) {
         placeHistoryEntityRepository.deleteById(id)
     }

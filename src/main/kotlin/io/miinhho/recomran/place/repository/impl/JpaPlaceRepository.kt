@@ -2,6 +2,7 @@ package io.miinhho.recomran.place.repository.impl
 
 import io.miinhho.recomran.place.repository.PlaceRepository
 import io.miinhho.recomran.place.model.Place
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -21,12 +22,14 @@ class JpaPlaceRepository(
             .map { it.toDomain() }.toList()
     }
 
+    @Transactional
     override fun save(entity: Place): Place {
         val newEntity = PlaceEntity.fromDomain(entity)
         val savedEntity = placeEntityRepository.save(newEntity)
         return savedEntity.toDomain()
     }
 
+    @Transactional
     override fun delete(id: Long) {
         placeEntityRepository.deleteById(id)
     }

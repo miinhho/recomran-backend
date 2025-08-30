@@ -6,6 +6,7 @@ import io.miinhho.recomran.saved.exception.SavedPlaceNotFoundException
 import io.miinhho.recomran.saved.repository.SavedPlaceRepository
 import io.miinhho.recomran.saved.model.SavedPlace
 import io.miinhho.recomran.user.repository.impl.UserEntityRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -37,6 +38,7 @@ class JpaSavedPlaceRepository(
             .map { it.toDomain() }.toList()
     }
 
+    @Transactional
     override fun save(entity: SavedPlace): SavedPlace {
         val userEntity = userEntityRepository.findById(entity.userId)
             .orElseThrow { IllegalArgumentException("사용자를 찾을 수 없습니다") }
@@ -46,6 +48,7 @@ class JpaSavedPlaceRepository(
         return savedEntity.toDomain()
     }
 
+    @Transactional
     override fun delete(id: Long) {
         savedPlaceEntityRepository.deleteById(id)
     }

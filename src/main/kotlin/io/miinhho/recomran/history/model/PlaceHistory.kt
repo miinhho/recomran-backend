@@ -9,3 +9,10 @@ data class PlaceHistory(
     val place: Place,
     val createdAt: LocalDateTime = LocalDateTime.now()
 )
+
+fun Place.toPlaceHistory(userId: Long): PlaceHistory {
+    return PlaceHistory(
+        userId = userId,
+        place = this
+    )
+}
