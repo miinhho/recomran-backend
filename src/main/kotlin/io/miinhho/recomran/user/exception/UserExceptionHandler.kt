@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
 class UserExceptionHandler {
-    @ExceptionHandler(UserNotFoundException::class)
-    fun userNotFoundExceptionHandler(ex: UserNotFoundException): APIResponseEntity {
+    @ExceptionHandler(UserException::class)
+    fun userExceptionHandler(ex: UserException): APIResponseEntity {
         return ex.toResponseEntity()
     }
 }

@@ -2,6 +2,7 @@ package io.miinhho.recomran.auth
 
 import io.miinhho.recomran.auth.dto.AuthRequest
 import io.miinhho.recomran.auth.dto.RefreshRequest
+import io.miinhho.recomran.auth.service.AuthService
 import io.miinhho.recomran.common.response.APIResponse
 import io.miinhho.recomran.common.response.APIResponseEntity
 import jakarta.validation.Valid

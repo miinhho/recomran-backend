@@ -7,7 +7,8 @@ enum class APIStatusCode(
     val httpStatus: HttpStatus,
     val defaultMessage: String? = null
 ) {
-    SUCCESS("SC00", HttpStatus.OK, "요청이 성공적으로 처리되었습니다"),
+    SUCCESS("SC00", HttpStatus.OK),
+    NO_CONTENT("SC01", HttpStatus.NO_CONTENT),
 
     // API Service codes
     API_SERVICE_DOWN("AD10", HttpStatus.INTERNAL_SERVER_ERROR, "서비스가 일시적으로 중단되었습니다"),

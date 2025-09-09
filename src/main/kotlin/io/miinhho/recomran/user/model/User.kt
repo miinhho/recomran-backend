@@ -20,19 +20,15 @@ data class User(
         return this.copy(hashedPassword = newPassword)
     }
 
+    fun changeEmail(newEmail: Email): User {
+        return this.copy(email = newEmail)
+    }
+
     fun updateProfile(username: Username? = null, image: String? = null): User {
         return this.copy(
             username = username ?: this.username,
             image = image ?: this.image
         )
-    }
-
-    fun addSavedPlace(place: SavedPlace): User {
-        return this.copy(savedPlaces = savedPlaces + place)
-    }
-
-    fun addPlaceHistory(history: PlaceHistory): User {
-        return this.copy(historyPlace = historyPlace + history)
     }
 
     fun isAdmin(): Boolean = role == UserRole.ADMIN

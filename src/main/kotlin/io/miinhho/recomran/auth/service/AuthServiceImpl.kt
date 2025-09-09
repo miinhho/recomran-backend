@@ -1,18 +1,17 @@
-package io.miinhho.recomran.auth
+package io.miinhho.recomran.auth.service
 
+import io.miinhho.recomran.auth.dto.TokenPair
 import io.miinhho.recomran.auth.exception.ConflictEmailException
 import io.miinhho.recomran.auth.exception.InvalidEmailException
 import io.miinhho.recomran.auth.exception.InvalidPasswordException
 import io.miinhho.recomran.auth.exception.InvalidTokenException
 import io.miinhho.recomran.auth.token.model.RefreshToken
 import io.miinhho.recomran.auth.token.repository.RefreshTokenRepository
-import io.miinhho.recomran.auth.token.TokenUtil
 import io.miinhho.recomran.security.jwt.HashEncoder
 import io.miinhho.recomran.security.jwt.JwtService
 import io.miinhho.recomran.user.model.Email
 import io.miinhho.recomran.user.model.User
 import io.miinhho.recomran.user.repository.UserRepository
-import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
@@ -20,14 +19,13 @@ import java.time.LocalDateTime
 import java.util.Base64
 
 @Service
-class AuthService(
+class AuthServiceImpl(
     private val jwtService: JwtService,
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val hashEncoder: HashEncoder,
-) {
-
-    fun register(email: String, password: String): User {
+) : AuthService {
+    override fun register(email: String, password: String): User {
         val email = Email(email)
         userRepository.findByEmail(email).let {
             if (it != null) throw ConflictEmailException()
@@ -41,7 +39,7 @@ class AuthService(
         )
     }
 
-    fun login(email: String, password: String): TokenPair {
+    override fun login(email: String, password: String): TokenPair {
         val email = Email(email)
         val user = userRepository.findByEmail(email)
             ?: throw InvalidEmailException()
@@ -62,7 +60,7 @@ class AuthService(
     }
 
     @Transactional
-    fun refresh(refreshToken: String): TokenPair {
+    override fun refresh(refreshToken: String): TokenPair {
         if (!jwtService.validateRefreshToken(refreshToken)) {
             throw InvalidTokenException()
         }
@@ -86,6 +84,7 @@ class AuthService(
         )
     }
 
+    @Transactional
     private fun storeRefreshToken(userId: Long, rawRefreshToken: String) {
         val hashedToken = hashToken(rawRefreshToken)
         val expiresAt = LocalDateTime.now().plusSeconds(
@@ -104,12 +103,4 @@ class AuthService(
         val hashBytes = digest.digest(token.encodeToByteArray())
         return Base64.getEncoder().encodeToString(hashBytes)
     }
-}
-
-data class TokenPair(
-    val accessToken: String,
-    val refreshToken: String,
-) {
-    fun toRefreshCookie(): ResponseCookie =
-        TokenUtil.getRefreshCookie(this.refreshToken)
 }

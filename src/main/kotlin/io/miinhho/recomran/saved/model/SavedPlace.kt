@@ -22,7 +22,5 @@ data class SavedPlace(
         return this.copy(name = newName)
     }
 
-    fun getPlaceCount(): Int = places.size
-
     fun containsPlace(placeId: Long): Boolean = places.any { it.id == placeId }
 }

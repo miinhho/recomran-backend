@@ -10,4 +10,5 @@ interface SavedPlaceRepository : CommonRepository<SavedPlace> {
     fun findPlacesBySavedPlaceId(id: Long, pageable: Pageable): List<Place>
     fun findPlacesByUserId(userId: Long, pageable: Pageable): List<Place>
     fun findByUserId(userId: Long, pageable: Pageable): List<SavedPlace>
+    fun findAllByUserId(userId: Long): List<SavedPlace>
 }

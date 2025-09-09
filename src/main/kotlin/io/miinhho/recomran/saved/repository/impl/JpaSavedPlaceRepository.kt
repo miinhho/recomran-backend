@@ -28,6 +28,11 @@ class JpaSavedPlaceRepository(
             .map { it.toDomain() }.toList()
     }
 
+    override fun findAllByUserId(userId: Long): List<SavedPlace> {
+        return savedPlaceEntityRepository.findAllSavedPlacesByUserId(userId)
+            .map { it.toDomain() }.toList()
+    }
+
     override fun findPlacesBySavedPlaceId(id: Long, pageable: Pageable): List<Place> {
         return savedPlaceEntityRepository.findPlacesBySavedPlaceId(id, pageable)
             .map { it.toDomain() }.toList()
@@ -63,4 +68,7 @@ interface SavedPlaceEntityRepository: JpaRepository<SavedPlaceEntity, Long> {
 
     @Query("SELECT sp FROM SavedPlaceEntity sp WHERE sp.user.id = :userId ORDER BY sp.name ASC")
     fun findSavedPlacesByUserId(userId: Long, pageable: Pageable): Page<SavedPlaceEntity>
+
+    @Query("SELECT sp FROM SavedPlaceEntity sp WHERE sp.user.id = :userId")
+    fun findAllSavedPlacesByUserId(userId: Long): List<SavedPlaceEntity>
 }

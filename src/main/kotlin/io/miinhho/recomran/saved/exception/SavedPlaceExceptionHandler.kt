@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 @ControllerAdvice
 class SavedPlaceExceptionHandler {
     @ExceptionHandler(SavedPlaceException::class)
-    fun authExceptionHandler(ex: SavedPlaceException): APIResponseEntity =
+    fun savedPlaceExceptionHandler(ex: SavedPlaceException): APIResponseEntity =
         ex.toResponseEntity()
 }

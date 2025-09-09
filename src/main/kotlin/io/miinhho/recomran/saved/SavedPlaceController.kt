@@ -2,17 +2,20 @@ package io.miinhho.recomran.saved
 
 import io.miinhho.recomran.common.response.APIResponse
 import io.miinhho.recomran.common.response.APIResponseEntity
+import io.miinhho.recomran.common.response.APIStatusCode
+import io.miinhho.recomran.saved.dto.AddPlaceToSavedPlaceRequest
 import io.miinhho.recomran.saved.dto.AddSavedPlaceRequest
-import io.miinhho.recomran.saved.exception.SavedPlaceNotOwnerException
-import io.miinhho.recomran.saved.model.SavedPlace
-import io.miinhho.recomran.saved.model.SavedPlaceName
-import io.miinhho.recomran.saved.repository.SavedPlaceRepository
+import io.miinhho.recomran.saved.dto.DeletePlacesFromSavedPlaceRequest
+import io.miinhho.recomran.saved.dto.GetSavedPlaceContainsCertainPlaceRequest
+import io.miinhho.recomran.saved.dto.UpdateSavedPlaceNameRequest
+import io.miinhho.recomran.saved.service.SavedPlaceService
 import io.miinhho.recomran.user.model.User
-import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -25,17 +28,53 @@ const val PLACE_PAGE_SIZE: Int = 10
 @RestController
 @RequestMapping("/api/saved-place")
 class SavedPlaceController(
-    private val savedPlaceRepository: SavedPlaceRepository
+    private val savedPlaceService: SavedPlaceService,
 ) {
-    @Transactional
     @PostMapping("/add")
     fun addSavedPlace(
         @AuthenticationPrincipal user: User,
         @RequestBody body: AddSavedPlaceRequest
     ): APIResponseEntity {
-        val savedPlace = SavedPlace(name = SavedPlaceName(body.name), userId = user.id!!)
-        savedPlaceRepository.save(savedPlace)
-        return APIResponse.success()
+        savedPlaceService.addSavedPlace(user.id!!, body.name)
+        return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)
+    }
+
+    @PostMapping("/{id}/add-place")
+    fun addPlaceToSavedPlace(
+        @PathVariable("id") id: Long,
+        @RequestBody body: AddPlaceToSavedPlaceRequest
+    ): APIResponseEntity {
+        val places = body.places.map { it.toPlace() }
+        savedPlaceService.addPlaces(id, places)
+        return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)
+    }
+
+    @DeleteMapping("/{id}/remove-place")
+    fun deletePlacesFromSavedPlace(
+        @PathVariable("id") id: Long,
+        @RequestBody body: DeletePlacesFromSavedPlaceRequest
+    ): APIResponseEntity {
+        savedPlaceService.deletePlaces(id, body.placeIds)
+        return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)
+    }
+
+    @PatchMapping("/{id}/update-name")
+    fun updateSavedPlaceName(
+        @PathVariable("id") id: Long,
+        @RequestBody body: UpdateSavedPlaceNameRequest
+    ): APIResponseEntity {
+        savedPlaceService.updateName(id, body.newName)
+        return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)
+    }
+
+    @PostMapping("/search")
+    fun getSavedPlaceContainsCertainPlace(
+        @AuthenticationPrincipal user: User,
+        @RequestBody body: GetSavedPlaceContainsCertainPlaceRequest
+    ): APIResponseEntity {
+        val savedPlaces = savedPlaceService.getSavedPlacesWithPlaceId(
+            userId = user.id!!, placeId = body.placeId)
+        return APIResponse.success(data = savedPlaces)
     }
 
     @GetMapping("/all")
@@ -43,7 +82,7 @@ class SavedPlaceController(
         @AuthenticationPrincipal user: User,
         @PageableDefault(size = SAVED_PLACE_PAGE_SIZE, page = 0) pageable: Pageable
     ): APIResponseEntity {
-        val places = savedPlaceRepository.findByUserId(
+        val places = savedPlaceService.getSavedPlaces(
             userId = user.id!!, pageable = pageable)
         return APIResponse.success(data = places)
     }
@@ -54,13 +93,8 @@ class SavedPlaceController(
         @PathVariable("id") id: Long,
         @PageableDefault(size = PLACE_PAGE_SIZE, page = 0) pageable: Pageable
     ): APIResponseEntity {
-        val savedPlace = savedPlaceRepository.findById(id)
-        // 해당 사용자가 saved place 에 접근할 수 있는지 확인
-        if (savedPlace.userId != user.id) {
-            throw SavedPlaceNotOwnerException()
-        }
-
-        val places = savedPlaceRepository.findPlacesBySavedPlaceId(id, pageable)
+        val places = savedPlaceService.getPlaces(
+            user = user, id = id, pageable = pageable)
         return APIResponse.success(data = places)
     }
 }
