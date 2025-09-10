@@ -1,8 +1,8 @@
-package io.miinhho.recomran.place.repository.impl
+package io.miinhho.recomran.place.repository
 
-import io.miinhho.recomran.history.repository.impl.PlaceHistoryEntity
+import io.miinhho.recomran.history.repository.PlaceHistoryEntity
 import io.miinhho.recomran.place.model.Place
-import io.miinhho.recomran.saved.repository.impl.SavedPlaceEntity
+import io.miinhho.recomran.saved.repository.SavedPlaceEntity
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

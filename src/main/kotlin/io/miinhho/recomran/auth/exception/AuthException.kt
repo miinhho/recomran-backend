@@ -10,11 +10,11 @@ open class AuthException(
 class InvalidTokenException()
     : AuthException(status = APIStatusCode.INVALID_TOKEN)
 
-class InvalidEmailException()
-    : AuthException(status = APIStatusCode.INVALID_EMAIL)
+class IllegalEmailException()
+    : AuthException(status = APIStatusCode.ILLEGAL_EMAIL)
 
-class InvalidPasswordException()
-    : AuthException(status = APIStatusCode.INVALID_PASSWORD)
+class IllegalPasswordException()
+    : AuthException(status = APIStatusCode.ILLEGAL_PASSWORD)
 
 class ConflictEmailException()
     : AuthException(status = APIStatusCode.EMAIL_ALREADY_USE)

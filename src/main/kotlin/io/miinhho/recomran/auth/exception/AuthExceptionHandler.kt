@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class AuthExceptionHandler {
     @ExceptionHandler(AuthException::class)
-    fun authExceptionHandler(ex: AuthException): APIResponseEntity {
+    fun handleAuthException(ex: AuthException): APIResponseEntity {
         return ex.toResponseEntity()
     }
 }

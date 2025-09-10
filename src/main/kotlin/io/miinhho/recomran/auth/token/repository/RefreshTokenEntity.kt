@@ -1,4 +1,4 @@
-package io.miinhho.recomran.auth.token.repository.impl
+package io.miinhho.recomran.auth.token.repository
 
 import io.miinhho.recomran.auth.token.model.RefreshToken
 import jakarta.persistence.Column

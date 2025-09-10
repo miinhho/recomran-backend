@@ -1,6 +1,5 @@
 package io.miinhho.recomran.security.jwt
 
-import io.miinhho.recomran.user.repository.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

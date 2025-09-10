@@ -18,7 +18,8 @@ data class SavedPlace(
         return this.copy(places = places.filter { it.id != placeId })
     }
 
-    fun updateName(newName: SavedPlaceName): SavedPlace {
+    fun updateName(newName: String): SavedPlace {
+        val newName = SavedPlaceName.from(newName)
         return this.copy(name = newName)
     }
 

@@ -6,10 +6,12 @@ import io.miinhho.recomran.common.response.APIStatusCode
 import io.miinhho.recomran.saved.dto.AddPlaceToSavedPlaceRequest
 import io.miinhho.recomran.saved.dto.AddSavedPlaceRequest
 import io.miinhho.recomran.saved.dto.DeletePlacesFromSavedPlaceRequest
+import io.miinhho.recomran.saved.dto.DeleteSavedPlaceRequest
 import io.miinhho.recomran.saved.dto.GetSavedPlaceContainsCertainPlaceRequest
 import io.miinhho.recomran.saved.dto.UpdateSavedPlaceNameRequest
 import io.miinhho.recomran.saved.service.SavedPlaceService
 import io.miinhho.recomran.user.model.User
+import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -27,15 +29,22 @@ const val PLACE_PAGE_SIZE: Int = 10
 
 @RestController
 @RequestMapping("/api/saved-place")
-class SavedPlaceController(
-    private val savedPlaceService: SavedPlaceService,
-) {
+class SavedPlaceController(private val savedPlaceService: SavedPlaceService) {
     @PostMapping("/add")
     fun addSavedPlace(
         @AuthenticationPrincipal user: User,
-        @RequestBody body: AddSavedPlaceRequest
+        @Valid @RequestBody body: AddSavedPlaceRequest
     ): APIResponseEntity {
         savedPlaceService.addSavedPlace(user.id!!, body.name)
+        return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteSavedPlace(
+        @AuthenticationPrincipal user: User,
+        @Valid @RequestBody body: DeleteSavedPlaceRequest
+    ): APIResponseEntity {
+        savedPlaceService.deleteSavedPlace(user, body.id)
         return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)
     }
 
@@ -61,7 +70,7 @@ class SavedPlaceController(
     @PatchMapping("/{id}/update-name")
     fun updateSavedPlaceName(
         @PathVariable("id") id: Long,
-        @RequestBody body: UpdateSavedPlaceNameRequest
+        @Valid @RequestBody body: UpdateSavedPlaceNameRequest
     ): APIResponseEntity {
         savedPlaceService.updateName(id, body.newName)
         return APIResponse.success(statusCode = APIStatusCode.NO_CONTENT)

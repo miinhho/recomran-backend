@@ -13,12 +13,6 @@ class UserNotFoundException(userId: Long) : UserException(
     message = "유저를 찾을 수 없습니다: $userId"
 )
 
-class UserIllegalEmailException(e: IllegalArgumentException) : UserException(
-    status = APIStatusCode.INVALID_REQUEST,
-    message = e.message
-)
-
-class UserIllegalNameException(e: IllegalArgumentException) : UserException(
-    status = APIStatusCode.INVALID_REQUEST,
-    message = e.message
+class UserAccessDeniedException() : UserException(
+    status = APIStatusCode.USER_ACCESS_DENIED,
 )

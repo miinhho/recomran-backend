@@ -1,9 +1,9 @@
-package io.miinhho.recomran.saved.repository.impl
+package io.miinhho.recomran.saved.repository
 
-import io.miinhho.recomran.place.repository.impl.PlaceEntity
+import io.miinhho.recomran.place.repository.PlaceEntity
 import io.miinhho.recomran.saved.model.SavedPlace
 import io.miinhho.recomran.saved.model.SavedPlaceName
-import io.miinhho.recomran.user.repository.impl.UserEntity
+import io.miinhho.recomran.user.repository.UserEntity
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -16,7 +16,6 @@ import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import kotlin.collections.map
 
 @Entity
 @Table(name = "saved_places")
@@ -58,7 +57,7 @@ class SavedPlaceEntity(
             )
 
             entity.places = savedPlace.places
-                .map { PlaceEntity.fromDomain(it) }
+                .map { PlaceEntity.Companion.fromDomain(it) }
                 .toMutableList()
 
             return entity

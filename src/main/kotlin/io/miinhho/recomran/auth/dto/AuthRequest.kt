@@ -1,18 +1,20 @@
 package io.miinhho.recomran.auth.dto
 
 import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.Size
 
 data class AuthRequest(
-    @Email(message = "유효하지 않은 이메일")
+    @field:NotEmpty
+    @field:Email(message = "유효하지 않은 이메일")
     val email: String,
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d).{8,}\\\$",
-        message = "비밀번호는 최소 8자리여야 하며, 한 개 이상의 숫자와 대소문자를 포함해야 합니다."
-    )
+
+    @field:NotEmpty
+    @field:Size(min = 6, max = 30, message = "비밀번호는 6자 이상, 30자 미만이여야 합니다")
     val password: String,
 )
 
 data class RefreshRequest(
+    @field:NotEmpty
     val refreshToken: String
 )

@@ -2,7 +2,23 @@ package io.miinhho.recomran.common.response
 
 import org.springframework.http.ResponseEntity
 
-typealias APIResponseEntity = ResponseEntity<APIResponse>
+data class CommonResponse(
+    val code: String,
+    val message: String? = null,
+    val data: Any? = null
+) {
+    companion object {
+        fun from(apiResponse: APIResponse): CommonResponse {
+            return CommonResponse(
+                code = apiResponse.statusCode.code,
+                message = apiResponse.message,
+                data = apiResponse.data
+            )
+        }
+    }
+}
+
+typealias APIResponseEntity = ResponseEntity<CommonResponse>
 
 data class APIResponse(
     val statusCode: APIStatusCode,
@@ -47,8 +63,10 @@ data class APIResponse(
             )
     }
 
-    private fun toResponseEntity(): APIResponseEntity =
-        ResponseEntity
+    private fun toResponseEntity(): APIResponseEntity {
+        val commonResponse = CommonResponse.from(this)
+        return ResponseEntity
             .status(statusCode.httpStatus)
-            .body(this)
+            .body(commonResponse)
+    }
 }

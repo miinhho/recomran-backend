@@ -9,26 +9,26 @@ import org.springframework.security.core.userdetails.UserDetails
 data class User(
     val id: Long? = null,
     val email: Email,
-    val hashedPassword: String,
+    val hashedPassword: Password,
     val role: UserRole = UserRole.USER,
     val username: Username? = null,
     val image: String? = null,
     val savedPlaces: List<SavedPlace> = emptyList(),
     val historyPlace: List<PlaceHistory> = emptyList()
 ) : UserDetails {
-    fun changePassword(newPassword: String): User {
+    fun changePassword(password: String): User {
+        val newPassword = Password.from(password)
         return this.copy(hashedPassword = newPassword)
     }
 
-    fun changeEmail(newEmail: Email): User {
+    fun changeEmail(email: String): User {
+        val newEmail = Email.from(email)
         return this.copy(email = newEmail)
     }
 
-    fun updateProfile(username: Username? = null, image: String? = null): User {
-        return this.copy(
-            username = username ?: this.username,
-            image = image ?: this.image
-        )
+    fun changeUsername(username: String): User {
+        val newUsername = Username.from(username)
+        return this.copy(username = newUsername)
     }
 
     fun isAdmin(): Boolean = role == UserRole.ADMIN
@@ -36,7 +36,7 @@ data class User(
     override fun getUsername(): String = email.value
     override fun getAuthorities(): Collection<GrantedAuthority> =
         listOf(SimpleGrantedAuthority("ROLE_$role"))
-    override fun getPassword(): String = hashedPassword
+    override fun getPassword(): String = hashedPassword.value
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
     override fun isCredentialsNonExpired(): Boolean = true
