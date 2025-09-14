@@ -3,6 +3,7 @@ package io.miinhho.recomran.place.repository
 import io.miinhho.recomran.history.repository.PlaceHistoryEntity
 import io.miinhho.recomran.place.model.Place
 import io.miinhho.recomran.saved.repository.SavedPlaceEntity
+import io.miinhho.recomran.saved.repository.SavedPlacePlaces
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -34,12 +35,6 @@ class PlaceEntity(
     var roadAddress: String,
 
     var url: String,
-
-    @OneToMany(mappedBy = "place", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var visitedHistories: MutableList<PlaceHistoryEntity> = mutableListOf(),
-
-    @ManyToMany(mappedBy = "places", fetch = FetchType.LAZY)
-    var savedPlaces: MutableList<SavedPlaceEntity> = mutableListOf(),
 ) {
     fun toDomain(): Place {
         return Place(

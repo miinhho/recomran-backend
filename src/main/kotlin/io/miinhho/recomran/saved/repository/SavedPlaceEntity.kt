@@ -12,9 +12,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.JoinTable
-import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 
 @Entity
@@ -31,20 +30,16 @@ class SavedPlaceEntity(
     @JoinColumn(name = "user_id", nullable = false)
     var user: UserEntity,
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinTable(
-        name = "saved_place_places",
-        joinColumns = [JoinColumn(name = "saved_place_id")],
-        inverseJoinColumns = [JoinColumn(name = "place_id")]
-    )
-    var places: MutableList<PlaceEntity> = mutableListOf(),
+    @OneToMany(mappedBy = "savedPlace", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var savedPlacePlaces: MutableList<SavedPlacePlaces> = mutableListOf(),
 ) {
     fun toDomain(): SavedPlace {
+        val places = savedPlacePlaces.map { it.place.toDomain() }
         return SavedPlace(
             id = this.id,
             name = SavedPlaceName(this.name),
             userId = this.user.id!!,
-            places = this.places.map { it.toDomain() },
+            places = places,
         )
     }
 
@@ -56,9 +51,13 @@ class SavedPlaceEntity(
                 user = userEntity,
             )
 
-            entity.places = savedPlace.places
-                .map { PlaceEntity.Companion.fromDomain(it) }
-                .toMutableList()
+            entity.savedPlacePlaces = savedPlace.places.map {
+                place ->
+                SavedPlacePlaces(
+                    place = PlaceEntity.fromDomain(place),
+                    savedPlace = entity
+                )
+            }.toMutableList()
 
             return entity
         }

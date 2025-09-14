@@ -2,7 +2,6 @@ package io.miinhho.recomran.user.repository
 
 import io.miinhho.recomran.user.model.Email
 import io.miinhho.recomran.user.model.User
-import jakarta.transaction.Transactional
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 

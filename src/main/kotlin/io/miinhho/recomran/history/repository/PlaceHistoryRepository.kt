@@ -45,9 +45,16 @@ class PlaceHistoryRepository(
 }
 
 interface PlaceHistoryEntityRepository: JpaRepository<PlaceHistoryEntity, Long> {
-    @Query("SELECT ph.place FROM PlaceHistoryEntity ph WHERE ph.user.id = :userId")
+    @Query("""
+        SELECT ph.place FROM PlaceHistoryEntity ph 
+        WHERE ph.user.id = :userId
+    """)
     fun findPlacesByUserId(userId: Long, pageable: Pageable): Page<PlaceEntity>
 
-    @Query("SELECT ph FROM PlaceHistoryEntity ph WHERE ph.user.id = :userId ORDER BY ph.createdAt DESC")
+    @Query("""
+        SELECT ph FROM PlaceHistoryEntity ph 
+        WHERE ph.user.id = :userId 
+        ORDER BY ph.createdAt DESC
+    """)
     fun findByUserId(userId: Long, pageable: Pageable): Page<PlaceHistoryEntity>
 }

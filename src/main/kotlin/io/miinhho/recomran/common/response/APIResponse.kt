@@ -55,12 +55,14 @@ data class APIResponse(
             statusCode: APIStatusCode = APIStatusCode.SUCCESS,
             data: Any? = null,
             message: String? = null,
-        ): APIResponse =
-            APIResponse(
+        ): CommonResponse {
+            val apiResponse = APIResponse(
                 statusCode = statusCode,
                 data = data,
                 message = message
             )
+            return CommonResponse.from(apiResponse)
+        }
     }
 
     private fun toResponseEntity(): APIResponseEntity {

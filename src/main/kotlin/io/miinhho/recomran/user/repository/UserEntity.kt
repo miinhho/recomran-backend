@@ -52,8 +52,8 @@ class UserEntity(
     fun toDomain(): User {
         return User(
             id = this.id,
-            email = Email.Companion.from(this.email),
-            hashedPassword = Password.Companion.from(this.hashedPassword),
+            email = Email.from(this.email),
+            hashedPassword = Password.from(this.hashedPassword),
             role = this.role,
             username = this.username?.let { Username(it) },
             image = this.image,
@@ -74,11 +74,11 @@ class UserEntity(
             )
 
             entity.savedPlaces = user.savedPlaces
-                .map { SavedPlaceEntity.Companion.fromDomain(it, entity) }
+                .map { SavedPlaceEntity.fromDomain(it, entity) }
                 .toMutableList()
 
             entity.historyPlace = user.historyPlace
-                .map { PlaceHistoryEntity.Companion.fromDomain(it, entity) }
+                .map { PlaceHistoryEntity.fromDomain(it, entity) }
                 .toMutableList()
 
             return entity

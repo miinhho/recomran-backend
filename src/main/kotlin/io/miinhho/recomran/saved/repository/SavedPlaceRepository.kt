@@ -59,15 +59,32 @@ class SavedPlaceRepository(
 }
 
 interface SavedPlaceEntityRepository: JpaRepository<SavedPlaceEntity, Long> {
-    @Query("SELECT DISTINCT p FROM SavedPlaceEntity sp JOIN sp.places p WHERE sp.user.id = :userId ORDER BY p.name ASC")
+    @Query("""
+        SELECT DISTINCT spp.place FROM SavedPlaceEntity sp
+        JOIN sp.savedPlacePlaces spp
+        WHERE sp.user.id = :userId
+        ORDER BY spp.place.name ASC
+    """)
     fun findPlacesByUserId(userId: Long, pageable: Pageable): Page<PlaceEntity>
 
-    @Query("SELECT p FROM SavedPlaceEntity sp JOIN sp.places p WHERE sp.id = :savedPlaceId ORDER BY p.name ASC")
+    @Query("""
+        SELECT spp.place FROM SavedPlaceEntity sp
+        JOIN sp.savedPlacePlaces spp
+        WHERE sp.id = :savedPlaceId
+        ORDER BY spp.place.name ASC
+    """)
     fun findPlacesBySavedPlaceId(savedPlaceId: Long, pageable: Pageable): Page<PlaceEntity>
 
-    @Query("SELECT sp FROM SavedPlaceEntity sp WHERE sp.user.id = :userId ORDER BY sp.name ASC")
+    @Query("""
+        SELECT sp FROM SavedPlaceEntity sp 
+        WHERE sp.user.id = :userId
+        ORDER BY sp.name ASC
+    """)
     fun findSavedPlacesByUserId(userId: Long, pageable: Pageable): Page<SavedPlaceEntity>
 
-    @Query("SELECT sp FROM SavedPlaceEntity sp WHERE sp.user.id = :userId")
+    @Query("""
+        SELECT sp FROM SavedPlaceEntity sp 
+        WHERE sp.user.id = :userId
+    """)
     fun findAllSavedPlacesByUserId(userId: Long): List<SavedPlaceEntity>
 }
