@@ -23,13 +23,18 @@ class SavedPlaceRepository(
     }
 
     fun findByUserId(userId: Long, pageable: Pageable): List<SavedPlace> {
-        return savedPlaceEntityRepository.findSavedPlacesByUserId(userId, pageable)
-            .map { it.toDomain() }.toList()
+        val savedPlaceIds = savedPlaceEntityRepository
+            .findSavedPlaceIdsByUserId(userId, pageable)
+            .toList()
+        val savedPlaces = savedPlaceEntityRepository
+            .findSavedPlacesWithPlacesByIds(savedPlaceIds)
+
+        return savedPlaces.map { it.toDomain() }
     }
 
     fun findAllByUserId(userId: Long): List<SavedPlace> {
         return savedPlaceEntityRepository.findAllSavedPlacesByUserId(userId)
-            .map { it.toDomain() }.toList()
+            .map { it.toDomain() }
     }
 
     fun findPlacesBySavedPlaceId(id: Long, pageable: Pageable): List<Place> {
@@ -76,14 +81,24 @@ interface SavedPlaceEntityRepository: JpaRepository<SavedPlaceEntity, Long> {
     fun findPlacesBySavedPlaceId(savedPlaceId: Long, pageable: Pageable): Page<PlaceEntity>
 
     @Query("""
-        SELECT sp FROM SavedPlaceEntity sp 
+        SELECT sp.id FROM SavedPlaceEntity sp
         WHERE sp.user.id = :userId
         ORDER BY sp.name ASC
     """)
-    fun findSavedPlacesByUserId(userId: Long, pageable: Pageable): Page<SavedPlaceEntity>
+    fun findSavedPlaceIdsByUserId(userId: Long, pageable: Pageable): Page<Long>
+
+    @Query("""
+        SELECT DISTINCT sp FROM SavedPlaceEntity sp
+        JOIN FETCH sp.savedPlacePlaces spp
+        JOIN FETCH spp.place
+        WHERE sp.id IN :ids
+    """)
+    fun findSavedPlacesWithPlacesByIds(ids: List<Long>): List<SavedPlaceEntity>
 
     @Query("""
         SELECT sp FROM SavedPlaceEntity sp 
+        JOIN FETCH sp.savedPlacePlaces spp
+        JOIN FETCH spp.place
         WHERE sp.user.id = :userId
     """)
     fun findAllSavedPlacesByUserId(userId: Long): List<SavedPlaceEntity>
