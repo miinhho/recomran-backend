@@ -4,13 +4,13 @@ import io.miinhho.recomran.place.model.Place
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
 @Repository
 class PlaceRepository(private val placeEntityRepository: PlaceEntityRepository) {
     fun findById(id: Long): Place? {
-        return placeEntityRepository.findById(id)
-            .orElse(null)?.toDomain()
+        return placeEntityRepository.findByIdOrNull(id)?.toDomain()
     }
 
     fun findByName(name: String, pageable: Pageable): MutableList<Place> {
