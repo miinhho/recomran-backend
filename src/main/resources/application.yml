@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: RecomRan
+
+kakao_api:
+    url: https://dapi.kakao.com/v2/local/search/keyword.json
+    key: ${KAKAO_API_KEY}
